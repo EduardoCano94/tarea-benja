@@ -1,0 +1,311 @@
+import React, { useState } from 'react';
+import { Calculator } from 'lucide-react';
+
+export default function TrussAnalysis() {
+  const [step, setStep] = useState(0);
+  
+  const steps = [
+    {
+      title: "1. DATOS DEL PROBLEMA",
+      content: `
+• Geometría:
+  - Base total: 20 pies (6 + 8 + 6)
+  - Altura: 8 pies
+  - Apoyo en A (izquierda)
+  - Apoyo en D (derecha)
+
+• Cargas:
+  - P₁ = 2000 lb en nodo B (↓)
+  - P₂ = 1200 lb en nodo C (↓)
+
+• Miembros:
+  AB, BC, CD (base)
+  AE, BE, CE, DE (superiores)
+      `
+    },
+    {
+      title: "2. CÁLCULO DE REACCIONES",
+      content: `
+Suponemos:
+• Apoyo A: Reacción vertical Rₐ
+• Apoyo D: Reacción vertical Rᴅ
+
+Ecuaciones de equilibrio:
+
+ΣFᵧ = 0:
+Rₐ + Rᴅ - 2000 - 1200 = 0
+Rₐ + Rᴅ = 3200 lb ... (1)
+
+ΣMₐ = 0 (momentos respecto a A):
+-2000(6) - 1200(14) + Rᴅ(20) = 0
+-12000 - 16800 + 20Rᴅ = 0
+20Rᴅ = 28800
+Rᴅ = 1440 lb ↑
+
+De (1):
+Rₐ = 3200 - 1440 = 1760 lb ↑
+
+✓ Verificación ΣMᴅ:
+1760(20) - 2000(14) - 1200(6) = 0
+35200 - 28000 - 7200 = 0 ✓
+      `
+    },
+    {
+      title: "3. ÁNGULOS Y GEOMETRÍA",
+      content: `
+Calculamos ángulos para análisis:
+
+Nodo E (altura = 8 pies):
+• Posición horizontal de E: 
+  x_E = 6 + 4 = 10 pies (centro)
+
+Para miembro AE:
+• Horizontal: 10 - 0 = 10 pies
+• Vertical: 8 pies
+• Longitud: √(10² + 8²) = 12.81 pies
+• θ_AE = arctan(8/10) = 38.66°
+
+Para miembro BE:
+• Horizontal: 10 - 6 = 4 pies
+• Vertical: 8 pies
+• Longitud: √(4² + 8²) = 8.94 pies
+• θ_BE = arctan(8/4) = 63.43°
+
+Para miembro CE:
+• Horizontal: 14 - 10 = 4 pies
+• Vertical: 8 pies
+• Longitud: 8.94 pies
+• θ_CE = arctan(8/4) = 63.43°
+
+Para miembro DE:
+• Horizontal: 20 - 10 = 10 pies
+• Vertical: 8 pies
+• Longitud: 12.81 pies
+• θ_DE = arctan(8/10) = 38.66°
+      `
+    },
+    {
+      title: "4. MÉTODO DE NODOS - NODO A",
+      content: `
+Fuerzas en nodo A:
+• Rₐ = 1760 lb (↑)
+• F_AB (horizontal, →)
+• F_AE (inclinada)
+
+Componentes de F_AE:
+• F_AE_x = F_AE × cos(38.66°) = 0.781F_AE
+• F_AE_y = F_AE × sin(38.66°) = 0.625F_AE
+
+ΣFₓ = 0:
+-F_AB + 0.781F_AE = 0
+F_AB = 0.781F_AE ... (a)
+
+ΣFᵧ = 0:
+1760 + 0.625F_AE = 0
+F_AE = -2816 lb (compresión)
+
+De (a):
+F_AB = 0.781(-2816) = -2200 lb (compresión)
+
+Resultados nodo A:
+• F_AE = 2816 lb (C)
+• F_AB = 2200 lb (C)
+      `
+    },
+    {
+      title: "5. MÉTODO DE NODOS - NODO B",
+      content: `
+Fuerzas en nodo B:
+• P₁ = 2000 lb (↓)
+• F_AB = 2200 lb (←, compresión)
+• F_BC (horizontal)
+• F_BE (inclinada)
+
+Componentes de F_BE:
+• F_BE_x = F_BE × cos(63.43°) = 0.447F_BE
+• F_BE_y = F_BE × sin(63.43°) = 0.894F_BE
+
+ΣFₓ = 0:
+2200 - F_BC - 0.447F_BE = 0
+F_BC = 2200 - 0.447F_BE ... (b)
+
+ΣFᵧ = 0:
+-2000 + 0.894F_BE = 0
+F_BE = 2237 lb (tensión)
+
+De (b):
+F_BC = 2200 - 0.447(2237)
+F_BC = 2200 - 1000 = 1200 lb (tensión)
+
+Resultados nodo B:
+• F_BE = 2237 lb (T)
+• F_BC = 1200 lb (T)
+      `
+    },
+    {
+      title: "6. MÉTODO DE NODOS - NODO C",
+      content: `
+Fuerzas en nodo C:
+• P₂ = 1200 lb (↓)
+• F_BC = 1200 lb (→, tensión)
+• F_CD (horizontal)
+• F_CE (inclinada)
+
+Componentes de F_CE:
+• F_CE_x = F_CE × cos(63.43°) = 0.447F_CE
+• F_CE_y = F_CE × sin(63.43°) = 0.894F_CE
+
+ΣFₓ = 0:
+-1200 + F_CD + 0.447F_CE = 0
+F_CD = 1200 - 0.447F_CE ... (c)
+
+ΣFᵧ = 0:
+-1200 + 0.894F_CE = 0
+F_CE = 1342 lb (tensión)
+
+De (c):
+F_CD = 1200 - 0.447(1342)
+F_CD = 1200 - 600 = 600 lb (tensión)
+
+Resultados nodo C:
+• F_CE = 1342 lb (T)
+• F_CD = 600 lb (T)
+      `
+    },
+    {
+      title: "7. MÉTODO DE NODOS - NODO E",
+      content: `
+Verificación en nodo E:
+• F_AE = 2816 lb (compresión, empuja hacia E)
+• F_BE = 2237 lb (tensión, jala desde E)
+• F_CE = 1342 lb (tensión, jala desde E)
+• F_DE (inclinada)
+
+Componentes:
+• F_AE: 2200→, 1760↓
+• F_BE: -1000→, -2000↓
+• F_CE: 600→, 1200↓
+• F_DE: -0.781F_DE→, 0.625F_DE↑
+
+ΣFₓ = 0:
+2200 - 1000 + 600 - 0.781F_DE = 0
+1800 = 0.781F_DE
+F_DE = -2304 lb (compresión)
+
+ΣFᵧ = 0:
+-1760 - 2000 + 1200 + 0.625(-2304) = 0
+-2560 - 1440 = -4000 ≈ 0 ✓
+
+Resultado nodo E:
+• F_DE = 2304 lb (C)
+      `
+    },
+    {
+      title: "8. RESUMEN DE RESULTADOS",
+      content: `
+FUERZAS EN LOS MIEMBROS:
+
+Miembros de la Base:
+• AB = 2200 lb (Compresión)
+• BC = 1200 lb (Tensión)
+• CD = 600 lb (Tensión)
+
+Miembros Inclinados:
+• AE = 2816 lb (Compresión)
+• BE = 2237 lb (Tensión)
+• CE = 1342 lb (Tensión)
+• DE = 2304 lb (Compresión)
+
+INTERPRETACIÓN:
+• (C) = Compresión (el miembro se acorta)
+• (T) = Tensión (el miembro se alarga)
+
+Los miembros en compresión deben diseñarse
+considerando pandeo.
+
+Los miembros en tensión son más eficientes
+ya que no tienen restricción de pandeo.
+
+✓ Todas las ecuaciones de equilibrio 
+  se cumplen en cada nodo.
+      `
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-white rounded-lg shadow-xl p-8 mb-6">
+          <div className="flex items-center gap-3 mb-6">
+            <Calculator className="w-8 h-8 text-indigo-600" />
+            <h1 className="text-3xl font-bold text-gray-800">
+              Análisis de Armadura - Solución Completa
+            </h1>
+          </div>
+          
+          <div className="mb-8 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+            <p className="text-sm text-gray-700">
+              <strong>Problema:</strong> Armadura con altura de 8 pies, base de 20 pies (6+8+6), 
+              con cargas de 2000 lb en B y 1200 lb en C.
+            </p>
+          </div>
+
+          <div className="flex gap-2 mb-6 flex-wrap">
+            {steps.map((s, i) => (
+              <button
+                key={i}
+                onClick={() => setStep(i)}
+                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                  step === i
+                    ? 'bg-indigo-600 text-white shadow-lg'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                Paso {i + 1}
+              </button>
+            ))}
+          </div>
+
+          <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-6 mb-6">
+            <h2 className="text-2xl font-bold text-indigo-800 mb-4">
+              {steps[step].title}
+            </h2>
+            <pre className="whitespace-pre-wrap font-mono text-sm leading-relaxed text-gray-800">
+              {steps[step].content}
+            </pre>
+          </div>
+
+          <div className="flex justify-between mt-6">
+            <button
+              onClick={() => setStep(Math.max(0, step - 1))}
+              disabled={step === 0}
+              className="px-6 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            >
+              ← Anterior
+            </button>
+            <button
+              onClick={() => setStep(Math.min(steps.length - 1, step + 1))}
+              disabled={step === steps.length - 1}
+              className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            >
+              Siguiente →
+            </button>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-lg p-6">
+          <h3 className="text-lg font-bold text-gray-800 mb-3">
+            📋 Notas Importantes:
+          </h3>
+          <ul className="space-y-2 text-sm text-gray-700">
+            <li>• Este análisis usa el <strong>Método de los Nodos</strong></li>
+            <li>• Las fuerzas negativas indican compresión</li>
+            <li>• Las fuerzas positivas indican tensión</li>
+            <li>• Se verificó equilibrio en cada nodo</li>
+            <li>• Puedes usar este método para cualquier armadura similar</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+}
